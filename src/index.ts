@@ -1,4 +1,6 @@
 import { Canvas } from 'engine/entities/Canvas';
+import { Rect } from 'engine/entities/Rect';
+import { VECTOR } from 'engine/types/Vector';
 
 import { Fighter, Sprite } from './classes';
 import { decreaseTimer, determineWinner, rectangularCollision } from './utils';
@@ -8,7 +10,17 @@ const canvas = new Canvas({
     height: 576,
 });
 
-canvas.context.fillRect(0, 0, canvas.width, canvas.height);
+new Rect({
+    ctx: canvas.context,
+    position: {
+        x: 0,
+        y: 0,
+    },
+    size: {
+        width: canvas.width,
+        height: canvas.height,
+    },
+}).draw();
 
 const background = new Sprite({
     position: {
@@ -166,12 +178,26 @@ decreaseTimer({ player, enemy });
 
 function animate() {
     window.requestAnimationFrame(animate);
-    canvas.context.fillStyle = 'black';
-    canvas.context.fillRect(0, 0, canvas.width, canvas.height);
+    new Rect({
+        ctx: canvas.context,
+        color: 'black',
+        position: VECTOR.ZERO,
+        size: {
+            width: canvas.width,
+            height: canvas.height,
+        },
+    }).draw();
     background.update();
     shop.update();
-    canvas.context.fillStyle = 'rgba(255, 255, 255, 0.15)';
-    canvas.context.fillRect(0, 0, canvas.width, canvas.height);
+    new Rect({
+        ctx: canvas.context,
+        color: 'rgba(255, 255, 255, 0.15)',
+        position: VECTOR.ZERO,
+        size: {
+            width: canvas.width,
+            height: canvas.height,
+        },
+    }).draw();
     player.update();
     enemy.update();
 
