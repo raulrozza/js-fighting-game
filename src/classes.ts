@@ -1,3 +1,5 @@
+import { Picture } from 'engine/entities/Picture';
+
 const gravity = 0.7;
 
 export class Sprite {
@@ -36,17 +38,30 @@ export class Sprite {
     }
 
     draw() {
-        this.canvas.context.drawImage(
-            this.image,
-            this.framesCurrent * (this.image.width / this.framesMax),
-            0,
-            this.image.width / this.framesMax,
-            this.image.height,
-            this.position.x - this.offset.x,
-            this.position.y - this.offset.y,
-            (this.image.width / this.framesMax) * this.scale,
-            this.image.height * this.scale,
-        );
+        new Picture({
+            ctx: this.canvas.context,
+            dimensions: {
+                position: {
+                    x: this.position.x - this.offset.x,
+                    y: this.position.y - this.offset.y,
+                },
+                size: {
+                    width: (this.image.width / this.framesMax) * this.scale,
+                    height: this.image.height * this.scale,
+                },
+            },
+            src: this.image.src,
+            spriting: {
+                position: {
+                    x: this.framesCurrent * (this.image.width / this.framesMax),
+                    y: 0,
+                },
+                size: {
+                    width: this.image.width / this.framesMax,
+                    height: this.image.height,
+                },
+            },
+        }).draw();
     }
 
     animateFrames() {
