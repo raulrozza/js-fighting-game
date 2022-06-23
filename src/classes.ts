@@ -1,5 +1,3 @@
-import { c, canvas } from './canvas';
-
 const gravity = 0.7;
 
 export class Sprite {
@@ -13,6 +11,7 @@ export class Sprite {
     public framesElapsed: any;
     public framesHold: any;
     public offset: any;
+    protected canvas: any;
 
     constructor({
         position,
@@ -20,6 +19,7 @@ export class Sprite {
         scale = 1,
         framesMax = 1,
         offset = { x: 0, y: 0 },
+        canvas,
     }: Record<string, any>) {
         this.position = position;
         this.width = 50;
@@ -32,10 +32,11 @@ export class Sprite {
         this.framesElapsed = 0;
         this.framesHold = 5;
         this.offset = offset;
+        this.canvas = canvas;
     }
 
     draw() {
-        c.drawImage(
+        this.canvas.context.drawImage(
             this.image,
             this.framesCurrent * (this.image.width / this.framesMax),
             0,
@@ -91,6 +92,7 @@ export class Fighter extends Sprite {
         offset = { x: 0, y: 0 },
         sprites,
         attackBox = { offset: {}, width: undefined, height: undefined },
+        canvas,
     }: Record<string, any>) {
         super({
             position,
@@ -98,6 +100,7 @@ export class Fighter extends Sprite {
             scale,
             framesMax,
             offset,
+            canvas,
         });
 
         this.velocity = velocity;
@@ -148,7 +151,7 @@ export class Fighter extends Sprite {
         // gravity function
         if (
             this.position.y + this.height + this.velocity.y >=
-            canvas.height - 96
+            this.canvas.height - 96
         ) {
             this.velocity.y = 0;
             this.position.y = 330;

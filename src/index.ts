@@ -1,6 +1,14 @@
-import { c, canvas } from './canvas';
+import { Canvas } from 'engine/entities/Canvas';
+
 import { Fighter, Sprite } from './classes';
 import { decreaseTimer, determineWinner, rectangularCollision } from './utils';
+
+const canvas = new Canvas({
+    width: 1024,
+    height: 576,
+});
+
+canvas.context.fillRect(0, 0, canvas.width, canvas.height);
 
 const background = new Sprite({
     position: {
@@ -8,6 +16,7 @@ const background = new Sprite({
         y: 0,
     },
     imageSrc: './img/background.png',
+    canvas,
 });
 
 const shop = new Sprite({
@@ -18,6 +27,7 @@ const shop = new Sprite({
     imageSrc: './img/shop.png',
     scale: 2.75,
     framesMax: 6,
+    canvas,
 });
 
 const player = new Fighter({
@@ -74,6 +84,7 @@ const player = new Fighter({
         width: 160,
         height: 50,
     },
+    canvas,
 });
 
 const enemy = new Fighter({
@@ -131,6 +142,7 @@ const enemy = new Fighter({
         width: 170,
         height: 50,
     },
+    canvas,
 });
 
 console.log(player);
@@ -154,12 +166,12 @@ decreaseTimer({ player, enemy });
 
 function animate() {
     window.requestAnimationFrame(animate);
-    c.fillStyle = 'black';
-    c.fillRect(0, 0, canvas.width, canvas.height);
+    canvas.context.fillStyle = 'black';
+    canvas.context.fillRect(0, 0, canvas.width, canvas.height);
     background.update();
     shop.update();
-    c.fillStyle = 'rgba(255, 255, 255, 0.15)';
-    c.fillRect(0, 0, canvas.width, canvas.height);
+    canvas.context.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    canvas.context.fillRect(0, 0, canvas.width, canvas.height);
     player.update();
     enemy.update();
 
