@@ -81,6 +81,7 @@ export class Fighter extends Sprite {
     public health: any;
     public sprites: any;
     public dead: any;
+    public animation: Animation;
 
     constructor({
         position,
