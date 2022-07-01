@@ -1,8 +1,9 @@
 import { Canvas } from 'engine/entities/Canvas';
 import { Rect } from 'engine/entities/Rect';
+import { Sprite } from 'engine/entities/Sprite';
 import { VECTOR } from 'engine/types/Vector';
 
-import { Fighter, Sprite } from './classes';
+import { Fighter } from './classes';
 import { decreaseTimer, determineWinner, rectangularCollision } from './utils';
 
 const canvas = new Canvas({
@@ -23,23 +24,38 @@ new Rect({
 }).draw();
 
 const background = new Sprite({
-    position: {
-        x: 0,
-        y: 0,
+    ctx: canvas.context,
+    dimensions: {
+        position: VECTOR.ZERO,
+        size: {
+            width: 50,
+            height: 150,
+        },
     },
-    imageSrc: './img/background.png',
-    canvas,
+    imageOptions: {
+        src: './img/background.png',
+    },
 });
 
 const shop = new Sprite({
-    position: {
-        x: 600,
-        y: 128,
+    ctx: canvas.context,
+    dimensions: {
+        position: {
+            x: 600,
+            y: 128,
+        },
+        size: {
+            width: 50,
+            height: 150,
+        },
     },
-    imageSrc: './img/shop.png',
-    scale: 2.75,
-    framesMax: 6,
-    canvas,
+    imageOptions: {
+        src: './img/shop.png',
+        scale: 2.75,
+    },
+    animationOptions: {
+        frames: 6,
+    },
 });
 
 const player = new Fighter({
@@ -157,8 +173,6 @@ const enemy = new Fighter({
     canvas,
 });
 
-console.log(player);
-
 const keys = {
     a: {
         pressed: false,
@@ -178,15 +192,7 @@ decreaseTimer({ player, enemy });
 
 function animate() {
     window.requestAnimationFrame(animate);
-    new Rect({
-        ctx: canvas.context,
-        color: 'black',
-        position: VECTOR.ZERO,
-        size: {
-            width: canvas.width,
-            height: canvas.height,
-        },
-    }).draw();
+
     background.update();
     shop.update();
     new Rect({
