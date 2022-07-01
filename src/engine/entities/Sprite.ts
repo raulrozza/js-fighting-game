@@ -1,4 +1,5 @@
 import { Animation } from 'engine/entities/Animation';
+import { Composable } from 'engine/entities/Composable';
 import { Picture } from 'engine/entities/Picture';
 import { Size } from 'engine/types/Size';
 import { VECTOR, Vector } from 'engine/types/Vector';
@@ -26,12 +27,15 @@ type BuildValues = {
     animationOptions?: AnimationOptions;
 };
 
-export class Sprite {
+const COMPONENTS = {
+    ANIMATION: 'animation',
+};
+
+export class Sprite extends Composable {
     private ctx: CanvasRenderingContext2D;
     private dimensions: Required<Dimensions>;
     private imageOptions: Required<ImageOptions>;
     private image: CanvasImageSource;
-    private animation?: Animation;
 
     constructor({
         ctx,
@@ -39,6 +43,7 @@ export class Sprite {
         animationOptions,
         imageOptions,
     }: BuildValues) {
+        super();
         const { position, size, offset = VECTOR.ZERO } = dimensions;
         const { src, scale = 1 } = imageOptions;
 
@@ -49,11 +54,16 @@ export class Sprite {
         this.image = new Image();
         this.image.src = this.imageOptions.src;
 
-        if (animationOptions) this.animation = new Animation(animationOptions);
+        if (animationOptions)
+            this.addComponent(
+                COMPONENTS.ANIMATION,
+                new Animation(animationOptions),
+            );
     }
 
     draw() {
         const { width, height } = this.image as HTMLImageElement;
+        const animation = this.getComponent<Animation>(COMPONENTS.ANIMATION);
 
         const position: Vector = {
             x: this.dimensions.position.x - this.dimensions.offset.x,
@@ -64,13 +74,13 @@ export class Sprite {
             height: height * this.imageOptions.scale,
         };
 
-        const picture = this.animation
+        const picture = animation
             ? new Picture({
                   ctx: this.ctx,
                   dimensions: {
                       position,
                       size: {
-                          width: size.width / this.animation.frames,
+                          width: size.width / animation.frames,
                           height: size.height,
                       },
                   },
@@ -78,12 +88,12 @@ export class Sprite {
                   spriting: {
                       position: {
                           x:
-                              this.animation.currentFrame *
-                              (width / this.animation.frames),
+                              animation.currentFrame *
+                              (width / animation.frames),
                           y: 0,
                       },
                       size: {
-                          width: width / this.animation.frames,
+                          width: width / animation.frames,
                           height,
                       },
                   },
@@ -101,7 +111,7 @@ export class Sprite {
     }
 
     update() {
+        super.update();
         this.draw();
-        this.animation?.update();
     }
 }
