@@ -1,8 +1,23 @@
 import { Animation } from 'engine/entities/Animation';
 import { Picture } from 'engine/entities/Picture';
+import { Vector } from 'engine/types/Vector';
 
 const gravity = 0.7;
 
+const keys = {
+    a: {
+        pressed: false,
+    },
+    d: {
+        pressed: false,
+    },
+    ArrowRight: {
+        pressed: false,
+    },
+    ArrowLeft: {
+        pressed: false,
+    },
+};
 export class Sprite {
     public position: any;
     public width: any;
@@ -70,8 +85,22 @@ export class Sprite {
     }
 }
 
+type KeyControllers = {
+    left: string;
+    right: string;
+    up: string;
+    down: string;
+};
+
+type Constructor = Record<string, any> & {
+    position: Vector;
+    velocity: Vector;
+    keys: KeyControllers;
+};
+
+type KeysType = Record<keyof KeyControllers, { key: string; pressed: boolean }>;
 export class Fighter extends Sprite {
-    public velocity: any;
+    public velocity: Vector;
     public width: any;
     public height: any;
     public lastKey: any;
@@ -82,6 +111,7 @@ export class Fighter extends Sprite {
     public sprites: any;
     public dead: any;
     public animation: Animation;
+    public keys: KeysType;
 
     constructor({
         position,
@@ -93,8 +123,9 @@ export class Fighter extends Sprite {
         offset = { x: 0, y: 0 },
         sprites,
         attackBox = { offset: {}, width: undefined, height: undefined },
+        keys,
         canvas,
-    }: Record<string, any>) {
+    }: Constructor) {
         super({
             position,
             imageSrc,
@@ -120,11 +151,53 @@ export class Fighter extends Sprite {
         this.health = 100;
         this.sprites = sprites;
         this.dead = false;
+        this.keys = Object.entries(keys).reduce<KeysType>(
+            (acc, [key, value]) => ({
+                ...acc,
+                [key]: {
+                    key: value,
+                    pressed: false,
+                },
+            }),
+            {} as KeysType,
+        );
 
         for (const sprite in this.sprites) {
             sprites[sprite].image = new Image();
             sprites[sprite].image.src = sprites[sprite].imageSrc;
         }
+
+        window.addEventListener('keydown', event => {
+            if (!this.dead) {
+                switch (event.key) {
+                    case this.keys.left.key:
+                        this.keys.left.pressed = true;
+                        this.lastKey = this.keys.left.key;
+                        break;
+                    case this.keys.right.key:
+                        this.keys.right.pressed = true;
+                        this.lastKey = this.keys.right.key;
+                        break;
+                    case this.keys.up.key:
+                        this.velocity.y = -20;
+                        break;
+                    case this.keys.down.key:
+                        this.attack();
+                        break;
+                }
+            }
+        });
+
+        window.addEventListener('keyup', event => {
+            switch (event.key) {
+                case this.keys.left.key:
+                    this.keys.left.pressed = false;
+                    break;
+                case this.keys.right.key:
+                    this.keys.right.pressed = false;
+                    break;
+            }
+        });
     }
 
     update() {
@@ -154,6 +227,27 @@ export class Fighter extends Sprite {
             this.velocity.y = 0;
             this.position.y = 330;
         } else this.velocity.y += gravity;
+
+        this.velocity.x = 0;
+
+        if (this.keys.left.pressed && this.lastKey === this.keys.left.key) {
+            this.velocity.x = -5;
+            this.switchSprite('run');
+        } else if (
+            this.keys.right.pressed &&
+            this.lastKey === this.keys.right.key
+        ) {
+            this.velocity.x = 5;
+            this.switchSprite('run');
+        } else {
+            this.switchSprite('idle');
+        }
+
+        if (this.velocity.y < 0) {
+            this.switchSprite('jump');
+        } else if (this.velocity.y > 0) {
+            this.switchSprite('fall');
+        }
     }
 
     attack() {
