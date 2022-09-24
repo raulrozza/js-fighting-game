@@ -41,7 +41,7 @@ export class Sprite extends Composable {
     private dimensions: Required<Dimensions>;
     private rectOptions: RectOptions;
     private imageOptions?: Required<ImageOptions>;
-    private image?: CanvasImageSource;
+    public image?: CanvasImageSource;
 
     constructor({
         dimensions,
