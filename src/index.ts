@@ -15,14 +15,16 @@ const canvas = Canvas.create({
     height: 576,
 });
 
-const screenBottom = new Rect({
-    position: {
-        x: 0,
-        y: 0,
-    },
-    size: {
-        width: canvas.width,
-        height: canvas.height,
+const screenBottom = new Sprite({
+    dimensions: {
+        position: {
+            x: 0,
+            y: 0,
+        },
+        size: {
+            width: canvas.width,
+            height: canvas.height,
+        },
     },
 });
 
@@ -59,12 +61,16 @@ const shop = new Sprite({
     },
 });
 
-const whiteOverlay = new Rect({
-    color: 'rgba(255, 255, 255, 0.15)',
-    position: VECTOR.ZERO,
-    size: {
-        width: canvas.width,
-        height: canvas.height,
+const whiteOverlay = new Sprite({
+    dimensions: {
+        position: VECTOR.ZERO,
+        size: {
+            width: canvas.width,
+            height: canvas.height,
+        },
+    },
+    rectOptions: {
+        color: 'rgba(255, 255, 255, 0.15)',
     },
 });
 
@@ -200,10 +206,10 @@ decreaseTimer({ player, enemy });
 function animate() {
     window.requestAnimationFrame(animate);
 
-    screenBottom.draw();
+    screenBottom.update();
     background.update();
     shop.update();
-    whiteOverlay.draw();
+    whiteOverlay.update();
     player.update();
     enemy.update();
 

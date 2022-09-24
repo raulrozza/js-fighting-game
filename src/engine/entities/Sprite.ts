@@ -1,7 +1,8 @@
 import { Animation } from 'engine/entities/Animation';
-import { Canvas } from 'engine/entities/Canvas';
 import { Composable } from 'engine/entities/Composable';
 import { Picture } from 'engine/entities/Picture';
+import { Rect } from 'engine/entities/Rect';
+import { Drawable } from 'engine/types/Drawable';
 import { Size } from 'engine/types/Size';
 import { VECTOR, Vector } from 'engine/types/Vector';
 
@@ -16,6 +17,10 @@ type ImageOptions = {
     scale?: number;
 };
 
+type RectOptions = {
+    color?: string;
+};
+
 type AnimationOptions = {
     frames: number;
     loop?: boolean;
@@ -23,7 +28,8 @@ type AnimationOptions = {
 
 type BuildValues = {
     dimensions: Dimensions;
-    imageOptions: ImageOptions;
+    imageOptions?: ImageOptions;
+    rectOptions?: RectOptions;
     animationOptions?: AnimationOptions;
 };
 
@@ -32,22 +38,31 @@ const COMPONENTS = {
 };
 
 export class Sprite extends Composable {
-    private ctx: CanvasRenderingContext2D;
     private dimensions: Required<Dimensions>;
-    private imageOptions: Required<ImageOptions>;
-    private image: CanvasImageSource;
+    private rectOptions: RectOptions;
+    private imageOptions?: Required<ImageOptions>;
+    private image?: CanvasImageSource;
 
-    constructor({ dimensions, animationOptions, imageOptions }: BuildValues) {
+    constructor({
+        dimensions,
+        animationOptions,
+        imageOptions,
+        rectOptions = {},
+    }: BuildValues) {
         super();
         const { position, size, offset = VECTOR.ZERO } = dimensions;
-        const { src, scale = 1 } = imageOptions;
 
-        this.ctx = Canvas.getInstance().context;
+        if (imageOptions) {
+            const { src, scale = 1 } = imageOptions;
+            this.imageOptions = { src, scale };
+
+            this.image = new Image();
+            this.image.src = this.imageOptions.src;
+        }
+
         this.dimensions = { position, size, offset };
-        this.imageOptions = { src, scale };
 
-        this.image = new Image();
-        this.image.src = this.imageOptions.src;
+        this.rectOptions = rectOptions;
 
         if (animationOptions)
             this.addComponent(
@@ -56,8 +71,20 @@ export class Sprite extends Composable {
             );
     }
 
-    draw() {
+    private draw() {
+        const drawable = this.imageOptions ? this.getPicture() : this.getRect();
+
+        drawable.draw();
+    }
+
+    public update() {
+        super.update();
+        this.draw();
+    }
+
+    private getPicture(): Drawable {
         const { width, height } = this.image as HTMLImageElement;
+        const options = this.imageOptions as Required<ImageOptions>;
         const animation = this.getComponent<Animation>(COMPONENTS.ANIMATION);
 
         const position: Vector = {
@@ -65,46 +92,46 @@ export class Sprite extends Composable {
             y: this.dimensions.position.y - this.dimensions.offset.y,
         };
         const size: Size = {
-            width: width * this.imageOptions.scale,
-            height: height * this.imageOptions.scale,
+            width: width * options.scale,
+            height: height * options.scale,
         };
 
-        const picture = animation
-            ? new Picture({
-                  dimensions: {
-                      position,
-                      size: {
-                          width: size.width / animation.frames,
-                          height: size.height,
-                      },
-                  },
-                  src: this.imageOptions.src,
-                  spriting: {
-                      position: {
-                          x:
-                              animation.currentFrame *
-                              (width / animation.frames),
-                          y: 0,
-                      },
-                      size: {
-                          width: width / animation.frames,
-                          height,
-                      },
-                  },
-              })
-            : new Picture({
-                  dimensions: {
-                      position,
-                      size,
-                  },
-                  src: this.imageOptions.src,
-              });
+        if (animation)
+            return new Picture({
+                dimensions: {
+                    position,
+                    size: {
+                        width: size.width / animation.frames,
+                        height: size.height,
+                    },
+                },
+                src: options.src,
+                spriting: {
+                    position: {
+                        x: animation.currentFrame * (width / animation.frames),
+                        y: 0,
+                    },
+                    size: {
+                        width: width / animation.frames,
+                        height,
+                    },
+                },
+            });
 
-        picture.draw();
+        return new Picture({
+            dimensions: {
+                position,
+                size,
+            },
+            src: options.src,
+        });
     }
 
-    update() {
-        super.update();
-        this.draw();
+    private getRect(): Drawable {
+        return new Rect({
+            position: this.dimensions.position,
+            size: this.dimensions.size,
+            color: this.rectOptions.color,
+        });
     }
 }
