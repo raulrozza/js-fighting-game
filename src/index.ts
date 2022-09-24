@@ -10,13 +10,12 @@ declare global {
     const gsap: any;
 }
 
-const canvas = new Canvas({
+const canvas = Canvas.create({
     width: 1024,
     height: 576,
 });
 
-new Rect({
-    ctx: canvas.context,
+const screenBottom = new Rect({
     position: {
         x: 0,
         y: 0,
@@ -25,10 +24,9 @@ new Rect({
         width: canvas.width,
         height: canvas.height,
     },
-}).draw();
+});
 
 const background = new Sprite({
-    ctx: canvas.context,
     dimensions: {
         position: VECTOR.ZERO,
         size: {
@@ -42,7 +40,6 @@ const background = new Sprite({
 });
 
 const shop = new Sprite({
-    ctx: canvas.context,
     dimensions: {
         position: {
             x: 600,
@@ -59,6 +56,15 @@ const shop = new Sprite({
     },
     animationOptions: {
         frames: 6,
+    },
+});
+
+const whiteOverlay = new Rect({
+    color: 'rgba(255, 255, 255, 0.15)',
+    position: VECTOR.ZERO,
+    size: {
+        width: canvas.width,
+        height: canvas.height,
     },
 });
 
@@ -189,37 +195,15 @@ const enemy = new Fighter({
     },
 });
 
-const keys = {
-    a: {
-        pressed: false,
-    },
-    d: {
-        pressed: false,
-    },
-    ArrowRight: {
-        pressed: false,
-    },
-    ArrowLeft: {
-        pressed: false,
-    },
-};
-
 decreaseTimer({ player, enemy });
 
 function animate() {
     window.requestAnimationFrame(animate);
 
+    screenBottom.draw();
     background.update();
     shop.update();
-    new Rect({
-        ctx: canvas.context,
-        color: 'rgba(255, 255, 255, 0.15)',
-        position: VECTOR.ZERO,
-        size: {
-            width: canvas.width,
-            height: canvas.height,
-        },
-    }).draw();
+    whiteOverlay.draw();
     player.update();
     enemy.update();
 

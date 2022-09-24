@@ -1,3 +1,4 @@
+import { Canvas } from 'engine/entities/Canvas';
 import { Drawable } from 'engine/types/Drawable';
 import { Size } from 'engine/types/Size';
 import { Vector } from 'engine/types/Vector';
@@ -8,7 +9,6 @@ type Dimensions = {
 };
 
 interface Constructor {
-    ctx: CanvasRenderingContext2D;
     dimensions: Dimensions;
     src: string;
     spriting?: Dimensions;
@@ -20,8 +20,8 @@ export class Picture implements Drawable {
     private ctx: CanvasRenderingContext2D;
     private image: CanvasImageSource;
 
-    constructor({ ctx, dimensions, spriting, src }: Constructor) {
-        this.ctx = ctx;
+    constructor({ dimensions, spriting, src }: Constructor) {
+        this.ctx = Canvas.getInstance().context;
         this.dimensions = dimensions;
         this.spriting = spriting;
         const image = new Image();

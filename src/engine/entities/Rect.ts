@@ -1,3 +1,4 @@
+import { Canvas } from 'engine/entities/Canvas';
 import { Drawable } from 'engine/types/Drawable';
 import { Size } from 'engine/types/Size';
 import { Vector } from 'engine/types/Vector';
@@ -5,7 +6,6 @@ import { Vector } from 'engine/types/Vector';
 const DEFAULT_CANVAS_STYLE = 'transparent';
 
 interface Constructor {
-    ctx: CanvasRenderingContext2D;
     position: Vector;
     size: Size;
     color?: string;
@@ -17,13 +17,8 @@ export class Rect implements Drawable {
     private size: Size;
     private color: string;
 
-    constructor({
-        ctx,
-        position,
-        size,
-        color = DEFAULT_CANVAS_STYLE,
-    }: Constructor) {
-        this.ctx = ctx;
+    constructor({ position, size, color = DEFAULT_CANVAS_STYLE }: Constructor) {
+        this.ctx = Canvas.getInstance().context;
         this.position = position;
         this.size = size;
         this.color = color;

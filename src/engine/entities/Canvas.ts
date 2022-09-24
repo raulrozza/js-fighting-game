@@ -1,18 +1,32 @@
 import { Size } from 'engine/types/Size';
-
 export class Canvas {
     private canvas: HTMLCanvasElement;
     public width: number;
     public height: number;
     public context: CanvasRenderingContext2D;
 
-    constructor(size: Size) {
+    private static instance: Canvas; // eslint-disable-line no-use-before-define
+
+    private constructor(size: Size) {
         this.canvas = this.getCanvasElement(size);
         this.width = size.width;
         this.height = size.height;
         this.context = this.getContext();
 
         this.renderScreen(this.canvas);
+    }
+
+    public static create(size: Size) {
+        if (!this.instance) {
+            this.instance = new Canvas(size);
+        }
+        return this.instance;
+    }
+
+    public static getInstance() {
+        if (!this.instance) throw new Error('Canvas is not created');
+
+        return this.instance;
     }
 
     private getCanvasElement(size: Size): HTMLCanvasElement {

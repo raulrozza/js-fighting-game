@@ -1,4 +1,5 @@
 import { Animation } from 'engine/entities/Animation';
+import { Canvas } from 'engine/entities/Canvas';
 import { Composable } from 'engine/entities/Composable';
 import { Picture } from 'engine/entities/Picture';
 import { Size } from 'engine/types/Size';
@@ -21,7 +22,6 @@ type AnimationOptions = {
 };
 
 type BuildValues = {
-    ctx: CanvasRenderingContext2D;
     dimensions: Dimensions;
     imageOptions: ImageOptions;
     animationOptions?: AnimationOptions;
@@ -37,17 +37,12 @@ export class Sprite extends Composable {
     private imageOptions: Required<ImageOptions>;
     private image: CanvasImageSource;
 
-    constructor({
-        ctx,
-        dimensions,
-        animationOptions,
-        imageOptions,
-    }: BuildValues) {
+    constructor({ dimensions, animationOptions, imageOptions }: BuildValues) {
         super();
         const { position, size, offset = VECTOR.ZERO } = dimensions;
         const { src, scale = 1 } = imageOptions;
 
-        this.ctx = ctx;
+        this.ctx = Canvas.getInstance().context;
         this.dimensions = { position, size, offset };
         this.imageOptions = { src, scale };
 
@@ -76,7 +71,6 @@ export class Sprite extends Composable {
 
         const picture = animation
             ? new Picture({
-                  ctx: this.ctx,
                   dimensions: {
                       position,
                       size: {
@@ -99,7 +93,6 @@ export class Sprite extends Composable {
                   },
               })
             : new Picture({
-                  ctx: this.ctx,
                   dimensions: {
                       position,
                       size,

@@ -36,7 +36,6 @@ export class Sprite {
 
     draw() {
         new Picture({
-            ctx: this.canvas.context,
             dimensions: {
                 position: {
                     x: this.position.x - this.offset.x,
