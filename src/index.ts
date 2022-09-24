@@ -6,6 +6,10 @@ import { VECTOR } from 'engine/types/Vector';
 import { Fighter } from './classes';
 import { decreaseTimer, determineWinner, rectangularCollision } from './utils';
 
+declare global {
+    const gsap: any;
+}
+
 const canvas = new Canvas({
     width: 1024,
     height: 576,
@@ -226,7 +230,7 @@ function animate() {
             rectangle2: enemy,
         }) &&
         player.isAttacking &&
-        player.animation.currentFrame === 4
+        player.animationProp.currentFrame === 4
     ) {
         enemy.takeHit();
         player.isAttacking = false;
@@ -237,7 +241,7 @@ function animate() {
     }
 
     // if player misses
-    if (player.isAttacking && player.animation.currentFrame === 4) {
+    if (player.isAttacking && player.animationProp.currentFrame === 4) {
         player.isAttacking = false;
     }
 
@@ -248,7 +252,7 @@ function animate() {
             rectangle2: player,
         }) &&
         enemy.isAttacking &&
-        enemy.animation.currentFrame === 2
+        enemy.animationProp.currentFrame === 2
     ) {
         player.takeHit();
         enemy.isAttacking = false;
@@ -259,13 +263,13 @@ function animate() {
     }
 
     // if player misses
-    if (enemy.isAttacking && enemy.animation.currentFrame === 2) {
+    if (enemy.isAttacking && enemy.animationProp.currentFrame === 2) {
         enemy.isAttacking = false;
     }
 
     // end game based on health
     if (enemy.health <= 0 || player.health <= 0) {
-        determineWinner({ player, enemy, timerId });
+        determineWinner({ player, enemy /* timerId */ });
     }
 }
 

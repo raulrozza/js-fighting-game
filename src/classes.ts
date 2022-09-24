@@ -3,21 +3,6 @@ import { Picture } from 'engine/entities/Picture';
 import { Vector } from 'engine/types/Vector';
 
 const gravity = 0.7;
-
-const keys = {
-    a: {
-        pressed: false,
-    },
-    d: {
-        pressed: false,
-    },
-    ArrowRight: {
-        pressed: false,
-    },
-    ArrowLeft: {
-        pressed: false,
-    },
-};
 export class Sprite {
     public position: any;
     public width: any;
@@ -110,7 +95,6 @@ export class Fighter extends Sprite {
     public health: any;
     public sprites: any;
     public dead: any;
-    public animation: Animation;
     public keys: KeysType;
 
     constructor({
@@ -342,5 +326,9 @@ export class Fighter extends Sprite {
                 }
                 break;
         }
+    }
+
+    get animationProp() {
+        return this.animation;
     }
 }
