@@ -43,6 +43,10 @@ export class Animation implements Component {
         this.resume();
     }
 
+    public isFinished() {
+        return this.currentFrame === this.frames - 1;
+    }
+
     private shouldUpdate(): boolean {
         if (this.isPaused) return false;
 

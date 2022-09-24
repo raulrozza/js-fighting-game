@@ -83,6 +83,8 @@ type Constructor = Record<string, any> & {
 };
 
 type KeysType = Record<keyof KeyControllers, { key: string; pressed: boolean }>;
+
+type FighterAnimations = '';
 export class Fighter extends Sprite {
     public velocity: Vector;
     public width: any;
