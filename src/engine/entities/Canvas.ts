@@ -15,20 +15,20 @@ export class Canvas {
         this.renderScreen(this.canvas);
     }
 
-    private getContext() {
-        const context = this.canvas.getContext('2d');
-
-        if (!context) throw new Error('Could not get canvas context');
-
-        return context;
-    }
-
     private getCanvasElement(size: Size): HTMLCanvasElement {
         const canvas = document.createElement('canvas');
         canvas.width = size.width;
         canvas.height = size.height;
 
         return canvas;
+    }
+
+    private getContext() {
+        const context = this.canvas.getContext('2d');
+
+        if (!context) throw new Error('Could not get canvas context');
+
+        return context;
     }
 
     private renderScreen(canvas: HTMLCanvasElement) {
